@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/sign.css">
+</head>
+
+<body>
+    <div class="form">
+        <input type="text" id="name" placeholder="Enter Your Name.">
+        <span id="nameError" class="error"></span>
+        <input type="email" id="email" placeholder="Enter Your Email.">
+        <span id="emailError" class="error"></span>
+        <input type="number" id="mobile" placeholder="Enter Your Mobile No.">
+        <span id="mobileError" class="error"></span>
+        <input type="password" id="password" placeholder="Enter Password">
+        <span id="passwordError" class="error"></span>
+        <input type="button" value="Create Account" id="save_data">
+        <h3>Already have an account <a href="login.html">Login</a></h3>
+    </div>
+</body>
+<script src="../js/utility.js"></script>
+<script>
+
+    let signstatus = lcg("signstatus");
+    if (signstatus == "true") {
+        redirect("../index.html");
+    }
+
+    let save_data = document.getElementById("save_data");
+    save_data.addEventListener("click", () => {
+        let name = document.getElementById("name");
+        let email = document.getElementById("email");
+        let mobile = document.getElementById("mobile");
+        let password = document.getElementById("password");
+
+        let nameError = document.getElementById("nameError");
+        let emailError = document.getElementById("emailError");
+        let mobileError = document.getElementById("mobileError");
+        let passwordError = document.getElementById("passwordError");
+
+        // Reset error messages
+        nameError.textContent = "";
+        emailError.textContent = "";
+        mobileError.textContent = "";
+        passwordError.textContent = "";
+
+        // Validation
+        if (name.value === "") {
+            nameError.textContent = "Name is required";
+            return;
+        }
+
+        if (email.value === "") {
+            emailError.textContent = "Email is required";
+            return;
+        }
+
+        // Regular expression to check email format
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email.value)) {
+            emailError.textContent = "Invalid email format";
+            return;
+        }
+
+        if (mobile.value === "") {
+            mobileError.textContent = "Mobile number is required";
+            return;
+        }
+
+        if (password.value === "") {
+            passwordError.textContent = "Password is required";
+            return;
+        }
+
+        // Perform further actions (e.g., submit the form) if all validations pass
+        // For now, let's just log the form data
+        console.log("Form submitted successfully");
+        console.log("Name:", name.value);
+        console.log("Email:", email.value);
+        console.log("Mobile:", mobile.value);
+        console.log("Password:", password.value);
+
+        let data = {
+            "Name": name.value,
+            "Email": email.value,
+            "Mobile": mobile.value,
+            "Password": password.value
+        }
+
+        lcs("userdata", JSON.stringify(data));
+        // localStorage.setItem("userdata",data);
+        lcs("signstatus", true);
+
+        redirect("../index.html");
+    });
+
+
+
+</script>
+
+</html>

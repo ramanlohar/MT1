@@ -1,0 +1,130 @@
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background-color: #007bff;
+    color: #fff;
+    text-align: center;
+    padding: 20px 0;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.h-div-f{
+    display: flex;    
+    justify-content: space-around;
+    align-items: center;
+}
+
+h1 {
+    margin: 0;
+}
+
+#accounts-section {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 50px;
+}
+
+.add-account-btn {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+}
+
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-div {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.popup-btn-div {
+    margin-top: 10px;
+}
+
+.popup-btn-div button {
+    margin-right: 10px;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* Account styles */
+.accounts-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.account {
+    background-color: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.account input[type="text"],
+.account input[type="number"] {
+    width: calc(100% - 14px);
+    padding: 8px;
+    margin: 8px 0;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.account-info-t {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.account-info {
+    display: flex;
+}
+
+.account-info input[type="button"] {
+    padding: 8px 16px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 10px;
+}
+
+.account-info input[type="button"]:hover {
+    background-color: #0056b3;
+}
+
+.dnone {
+    display: none;
+}

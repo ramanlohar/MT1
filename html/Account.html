@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accounts</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/popup.css" />
+    <link rel="stylesheet" href="../css/accounts.css" />
+</head>
+
+<body>
+    <header>
+        <div class="h-div-f">
+            <h1 onclick="window.location.href = '../index.html'">&lt;</h1>
+            <h1>Accounts</h1>
+            <h1></h1>
+        </div>
+        <h4 id="Total_Account_Amount"></h4>
+    </header>
+    <section id="accounts-section">
+        <div id="Accounts" class="accounts-container"></div>
+        <button type="button" class="add-account-btn">+</button>
+    </section>
+
+    <div class="popup dnone">
+        <div class="popup-div">
+            <h2 id="popup-title">Add New</h2>
+            <form class="form">
+                <input type="text" id="name" placeholder="Enter Name" required />
+                <input type="number" id="mobile" placeholder="Enter Amount" required />
+                <div class="popup-btn-div">
+                    <button type="button" id="action-btn">Save</button>
+                    <button id="Cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="Account_script.js"></script>
+</body>
+
+</html>

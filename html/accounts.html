@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Accounts</title>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/popup.css" />
+    <link rel="stylesheet" href="../css/accounts.css" />
+    <!-- <script src="js/allsum.js"></script> -->
+    <style>
+        .account {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin-bottom: 20px; /* Add some spacing between account elements */
+    border: 1px solid #ccc; /* Add a border for visual separation */
+    border-radius: 8px; /* Add border radius for rounded corners */
+}
+
+.account input {
+    padding: 7px;
+    margin: 4px 0px;
+    width: calc(100% - 14px); /* Adjust input width to fit within the container */
+    font-size: 18px;
+    border: none; /* Remove default input border */
+    background-color: transparent; /* Make input background transparent */
+    outline: none; /* Remove outline on focus */
+}
+
+.account-info-t {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px; /* Add spacing between sections */
+}
+
+.account-info-t label {
+    font-weight: bold; /* Make labels bold for emphasis */
+}
+
+.account-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Center align items vertically */
+}
+
+.account-info input[type="text"] {
+    flex: 1; /* Distribute input fields evenly */
+    text-align: center; /* Center align text within input fields */
+}
+
+.account-info input[type="button"] {
+    padding: 5px 10px; /* Adjust button padding */
+    background-color: #007bff; /* Set button background color */
+    color: #fff; /* Set button text color */
+    border: none; /* Remove button border */
+    border-radius: 4px; /* Add border radius for rounded corners */
+    cursor: pointer; /* Change cursor to pointer on hover */
+}
+
+.account-info input[type="button"]:hover {
+    background-color: #0056b3; /* Darken button color on hover */
+}
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>Raman Lohar</h1>
+    </header>
+    <section>
+        <div id="Accounts"></div>
+        <button type="button" class="f-btn">+</button>
+    </section>
+
+    <div class="popup dnone">
+        <div class="popup-div">
+            <h2 id="popup-title">Add New</h2>
+            <form class="form">
+                <input type="text" id="name" placeholder="Enter Name" required />
+                <input type="number" id="mobile" placeholder="Enter Amount" required />
+                <div class="popup-btn-div">
+                    <button type="button" id="action-btn">Save</button>
+                    <button id="Cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Event listeners
+document.querySelector(".f-btn").addEventListener("click", showAddAccountPopup);
+document.querySelector("#Cancel").addEventListener("click", hidePopup);
+document.querySelector("#action-btn").addEventListener("click", saveOrUpdateAccount);
+document.addEventListener("DOMContentLoaded", updateAccountAmounts);
+
+// Functions
+function showAddAccountPopup() {
+    showPopup("Add New", "Save");
+}
+
+function hidePopup() {
+    document.querySelector(".popup").classList.add("dnone");
+}
+
+function saveOrUpdateAccount() {
+    const name = document.querySelector("#name");
+    const mobile = document.querySelector("#mobile");
+    const id = parseInt(document.querySelector("#action-btn").dataset.id) || 0;
+
+    if (!name.value || !mobile.value) {
+        highlightInvalidInput(name, mobile);
+        return;
+    }
+
+    const data = {
+        Name: name.value,
+        Mobile: mobile.value,
+        initial: mobile.value,
+    };
+    const Acc_Count = parseInt(localStorage.getItem("Acc_Count") || 3) + 1;
+    localStorage.setItem("Acc_Count", Acc_Count);
+    localStorage.setItem("Acc_" + (id ? id : Acc_Count), JSON.stringify(data));
+
+    hidePopup();
+    document.querySelector(".form").reset();
+    displayAccounts();
+}
+
+function highlightInvalidInput(...inputs) {
+    inputs.forEach(input => input.style.backgroundColor = "red");
+    setTimeout(() => {
+        inputs.forEach(input => input.style.backgroundColor = "");
+    }, 1000);
+}
+
+function displayAccounts() {
+    const Acc_Count = parseInt(localStorage.getItem("Acc_Count") || 0);
+    const Accounts = document.getElementById("Accounts");
+    Accounts.innerHTML = "";
+    for (let index = 1; index <= Acc_Count; index++) {
+        const accountData = JSON.parse(localStorage.getItem("Acc_" + index));
+        if (accountData) {
+            const accountHTML = createAccountHTML(index, accountData);
+            Accounts.appendChild(accountHTML);
+        }
+    }
+}
+
+function createAccountHTML(index, accountData) {
+    const accountDiv = document.createElement("div");
+    accountDiv.classList.add("account");
+    accountDiv.id = "Acc_" + index;
+
+    const accountInfoHTML = `
+        <div class="account-info-t">
+            <label for="">Account Name</label>
+            <label for="">Amount</label>
+            <label for="">Initial</label>
+        </div>
+        <div class="account-info">
+            <input type="text" value="${accountData.Name}" readonly>
+            <input type="text" value="${accountData.Mobile}" readonly>
+            <input type="text" value="${accountData.initial}" readonly>
+        </div>
+        <div class="account-info">
+            <input type="button" value="edit" onclick="editAccount(${index},'${accountData.Name}','${accountData.initial}')">
+            <input type="button" value="del" onclick="deleteAccount(${index})">
+        </div>
+    `;
+    accountDiv.innerHTML = accountInfoHTML;
+    return accountDiv;
+}
+
+function deleteAccount(id) {
+    localStorage.removeItem("Acc_" + id);
+    displayAccounts();
+}
+
+function editAccount(id, Name, amount) {
+    showPopup("Edit", "Update");
+    const name = document.querySelector("#name");
+    const mobile = document.querySelector("#mobile");
+    name.value = Name;
+    mobile.value = amount;
+    document.querySelector("#action-btn").dataset.id = id;
+}
+
+function updateAccountAmounts() {
+    const Con_Count = parseInt(localStorage.getItem("Con_Count") || 0);
+    const All_account_values = JSON.parse(localStorage.getItem("All_account_values") || "[]");
+    All_account_values.forEach(element => {
+        const acc_id = element.Id;
+        let saved_acc = JSON.parse(localStorage.getItem("Acc_" + acc_id) || "{}");
+        const updatedAmount = element.Amount + parseFloat(saved_acc.initial || 0);
+        const updatedData = { Name: saved_acc.Name || element.Name, Mobile: updatedAmount, initial: saved_acc.initial || 0 };
+        localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
+    });
+    displayAccounts();
+}
+
+function getUniqueAccountIds() {
+    const Con_Count = parseInt(localStorage.getItem("Con_Count") || 0);
+    const accountIds = [];
+    for (let j = 1; j <= Con_Count; j++) {
+        const Contact = JSON.parse(localStorage.getItem("Con_" + j) || "{}");
+        if (Contact.Allaccountarr) {
+            Contact.Allaccountarr.forEach((element) => {
+                const cAccountId = parseInt(element.Account_Id);
+                if (!accountIds.includes(cAccountId)) {
+                    accountIds.push(cAccountId);
+                }
+            });
+        }
+    }
+    return accountIds;
+}
+
+function updateAllAccountValues() {
+    const accountIds = getUniqueAccountIds();
+    const Con_Count = parseInt(localStorage.getItem("Con_Count") || 0);
+    const arr = [];
+
+    accountIds.forEach((i) => {
+        let total = 0;
+        let Account_Name = "";
+
+        for (let j = 1; j <= Con_Count; j++) {
+            const Contact = JSON.parse(localStorage.getItem("Con_" + j) || "{}");
+            if (Contact.Allaccountarr) {
+                Contact.Allaccountarr.forEach((element) => {
+                    if (element.Account_Id == i) {
+                        Account_Name = element.Account_Name;
+                        total += parseFloat(element.Ammount);
+                    }
+                });
+            }
+        }
+
+        const data = { Name: Account_Name, Id: i, Amount: total };
+        arr.push(data);
+    });
+
+    localStorage.setItem("All_account_values", JSON.stringify(arr));
+}
+
+updateAllAccountValues();
+displayAccounts();
+
+    </script>
+</body>
+
+</html>

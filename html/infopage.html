@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/popup.css">
+    <style>
+        body {
+            background-color: antiquewhite;
+        }
+
+        .message-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding-bottom: 100px;
+            background-color: transparent;
+        }
+
+        .message {
+            background-color: rgba(172, 255, 47, 0.4);
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+            /* border: 1px solid black; */
+            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        .message2 {
+            text-align: right;
+            background-color: rgba(255, 0, 0, 0.4);
+            padding: 10px;
+            margin: 5px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+            align-self: flex-end;
+            /* border: 1px solid black; */
+            box-shadow: 0px 4px 8px 0px rgba(0, 0, 0, 0.5);
+        }
+
+        #supdate {
+            display: none;
+            /* Hide the update button by default */
+        }
+
+        .edit-btn,
+        .delete-btn {
+            padding: 3px;
+            border-radius: 7px;
+            color: white;
+            background-color: blue;
+        }
+
+        .delete-btn {
+            background-color: red;
+        }
+
+        .message-date {
+            background-color: rgb(131, 131, 255);
+            padding: 5px;
+            border-radius: 10px;
+            margin: 10px auto 10px;
+            position: sticky;
+            top: 60px;
+        }
+
+        .save-time {
+            font-size: 12px;
+            width: 100%;
+            text-transform: uppercase;
+            text-align: end;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1 class="back-btn">&lt;</h1>
+        <div>
+            <h1 class="heading">Raman Lohar</h1>
+            <h5 class="T-amount"></h5>
+        </div>
+        <h5 class="mobile dnone"></h5>
+        <h1>&vellip;</h1>
+    </header>
+    <section>
+        <div class="message-container" id="m_container">
+            <!-- Messages will be displayed here -->
+        </div>
+    </section>
+    <button class="f-btn">+</button>
+
+    <div class="popup dnone">
+        <div class="popup-div">
+            <h2 id="popup-title">Add New</h2>
+            <div class="form">
+                <div class="radio_div">
+                    <label for="income" class="rdl">Receive</label>
+                    <input type="radio" name="type" id="income" value="in" class="dnone">
+                    <label for="expend" class="rdl">Send</label>
+                    <input type="radio" name="type" id="expend" value="out" class="dnone">
+                </div>
+                <select name="actype" id="actype">
+                    <option value="1">Cash</option>
+                    <option value="2">Phone Pe</option>
+                </select>
+                <input type="date" id="date">
+                <input type="text" id="name" placeholder="Description" required>
+                <input type="number" id="amount" placeholder="Amount" required>
+                <p id="warn"></p>
+                <div class="popup-btn-div">
+                    <button type="submit" id="sdata">Save</button>
+                    <button type="submit" id="supdate">Update</button>
+                    <button id="Cancel">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="total">
+
+    </div>
+
+</body>
+<script>
+    // Function to reset form fields
+    function resetForm() {
+        document.getElementById("date").value = "";
+        document.getElementById("name").value = "";
+        document.getElementById("amount").value = "";
+        document.querySelector("input[name='type']:checked").checked = false;
+        document.querySelector("#actype").selectedIndex = 0;
+    }
+
+    // Function to display warning message
+    function displayWarning(message) {
+        let warn = document.getElementById("warn");
+        warn.style.maxWidth = "100%"
+        warn.innerHTML = message;
+        warn.style.color = "red";
+
+        setTimeout(() => {
+            let warn = document.getElementById("warn").innerHTML = "";
+
+        }, 1000);
+    }
+
+    // Function to validate form fields
+    function validateForm() {
+        const type = document.querySelector("input[name='type']:checked");
+        const actype = document.getElementById("actype").value;
+        const date = document.getElementById("date").value;
+        const name = document.getElementById("name").value;
+        const amount = document.getElementById("amount").value;
+
+        if (!type) {
+            displayWarning("Please select a transaction type.");
+            return false;
+        }
+        if (!actype) {
+            displayWarning("Please select an account type.");
+            return false;
+        }
+        if (!date) {
+            displayWarning("Please select a date.");
+            return false;
+        }
+        if (!name) {
+            displayWarning("Please enter a description.");
+            return false;
+        }
+        if (!amount) {
+            displayWarning("Please enter an amount.");
+            return false;
+        }
+        return true;
+    }
+
+    document.querySelector(".back-btn").addEventListener("click", () => {
+        window.location.href = "../index.html";
+    });
+
+    let info_con = localStorage.getItem("info_con");
+    let con = localStorage.getItem(info_con);
+    con = JSON.parse(con);
+    document.querySelector(".heading").innerHTML = con["Name"];
+    document.querySelector(".mobile").innerHTML = con["Mobile"];
+
+    document.querySelector(".f-btn").addEventListener("click", () => {
+        document.querySelector(".popup").classList.remove("dnone");
+        document.getElementById("popup-title").innerText = "Add New"; // Set title for adding new message
+        document.getElementById("sdata").style.display = "inline"; // Show the save button
+        document.getElementById("supdate").style.display = "none"; // Hide the update button
+    });
+
+    document.querySelector("#Cancel").addEventListener("click", () => {
+        document.querySelector(".popup").classList.add("dnone");
+        resetForm(); // Reset form fields
+    });
+
+    document.getElementById("sdata").addEventListener("click", () => {
+        if (validateForm()) {
+            let type = document.querySelector("input[name='type']:checked").value;
+            let actype = document.getElementById("actype").value;
+            let date = document.getElementById("date").value;
+            let name = document.getElementById("name").value;
+            let amount = document.getElementById("amount").value;
+
+            const timestamp = new Date().getTime(); // Get current timestamp
+            const uniqueId = 'ID_' + timestamp; // Concatenate 'ID_' with timestamp
+
+            let acc_name = localStorage.getItem("Acc_" + actype);
+
+            if (acc_name) {
+
+                acc_name = JSON.parse(acc_name);
+                acc_name = acc_name.Name;
+
+                let data = {
+                    type: type,
+                    actype: actype,
+                    date: date,
+                    name: name,
+                    amount: amount,
+                    accountN: acc_name,
+                    Id: uniqueId
+                }
+
+                let info_con_list = localStorage.getItem(info_con + "list");
+                let arr = [];
+                if (info_con_list) {
+                    arr = JSON.parse(info_con_list);
+                }
+                arr.push(data);
+                localStorage.setItem(info_con + "list", JSON.stringify(arr));
+            } else {
+
+                if (actype == "1") {
+                    var actype_name = "Cash"; // Changed let to var for variable scope
+                } else {
+                    var actype_name = "Phone Pe"; // Changed let to var for variable scope
+                }
+
+                let data = {
+                    type: type,
+                    actype: actype,
+                    date: date,
+                    name: name,
+                    amount: amount,
+                    accountN: actype_name, // Use the variable here
+                    Id: uniqueId
+                }
+
+
+                let info_con_list = localStorage.getItem(info_con + "list");
+                let arr = [];
+                if (info_con_list) {
+                    arr = JSON.parse(info_con_list);
+                }
+                arr.push(data);
+                localStorage.setItem(info_con + "list", JSON.stringify(arr));
+
+            }
+
+            display(); // Call the display function to update the message container
+            document.querySelector(".popup").classList.add("dnone");
+            resetForm(); // Reset form fields
+        }
+    });
+
+
+    function display() {
+        let m_container = document.getElementById("m_container");
+        let info_con_list = localStorage.getItem(info_con + "list");
+
+        let accountMap = {}; // Use an object to store account information
+
+        let total = 0;
+        let previousDate = null; // Variable to store the date of the previous message
+        m_container.innerHTML = ''; // Clear the message container before repopulating
+        if (info_con_list) {
+            let arr = JSON.parse(info_con_list);
+            // Sort the array by date
+            arr.sort((a, b) => new Date(a.date) - new Date(b.date));
+            arr.forEach((item, index) => {
+                const timeDate = getTimeDateFromUniqueId(item.Id);
+                // Check if the date of the current message is different from the date of the previous message
+                if (previousDate !== item.date) {
+                    // If different, display the date
+                    let dateDiv = document.createElement("div");
+                    dateDiv.classList.add('message-date');
+                    dateDiv.textContent = formatDate(item.date);
+                    m_container.appendChild(dateDiv);
+                    previousDate = item.date; // Update the previousDate variable
+                }
+
+                let condition = item.type === 'in' ? true : false;
+                let amount = parseFloat(item.amount);
+
+                // Update the total amount for the account
+                if (accountMap[item.accountN]) {
+                    accountMap[item.accountN].amount += condition ? amount : -amount;
+                } else {
+                    accountMap[item.accountN] = {
+                        accountId: item.actype, // Add the account ID
+                        amount: condition ? amount : -amount
+                    };
+                }
+
+                let cdiv = document.createElement("div");
+                cdiv.classList.add(item.type === 'in' ? 'message' : 'message2');
+                cdiv.classList.add("msg_box");
+                cdiv.innerHTML = `
+                <p>${item.name}</p>
+                <p>${item.amount}</p>
+                <p>${item.accountN}</p>
+                <p class="save-time">${timeDate.time}</p>
+                <button class="edit-btn dnone" onclick="editMessage('${item.Id}')">Edit</button>
+                <button class="delete-btn dnone" onclick="deleteMessage('${item.Id}')">Delete</button>
+            `;
+
+                m_container.appendChild(cdiv);
+
+                total += condition ? amount : -amount;
+            });
+
+            // Display the total amount
+            document.querySelector(".T-amount").innerHTML = "Total Amount : " + total;
+
+            // Update the account totals in localStorage
+            let acc_amount = JSON.parse(localStorage.getItem(info_con));
+            acc_amount["Amount"] = total;
+            acc_amount["Allaccountarr"] = Object.entries(accountMap).map(([Account_Name, data]) => ({ Account_Name, Account_Id: data.accountId, Ammount: data.amount }));
+            localStorage.setItem(info_con, JSON.stringify(acc_amount));
+
+            console.log(acc_amount["Allaccountarr"]);
+        }
+    }
+
+    // Wait for the DOM content to be fully loaded before executing the script
+    document.addEventListener("DOMContentLoaded", function () {
+        let allMessages = document.querySelectorAll(".message, .message2");
+        let pressTimer; // Variable to store the timer
+
+        allMessages.forEach(message => {
+            message.addEventListener("mousedown", () => {
+                // Start the timer when mouse is pressed
+                pressTimer = setTimeout(() => {
+                    // Display the edit button when the press duration exceeds 1 second
+                    message.querySelector(".edit-btn").classList.remove("dnone");
+                }, 1000); // 1000 milliseconds = 1 second
+            });
+
+            message.addEventListener("mouseup", () => {
+                // Clear the timer when mouse is released
+                clearTimeout(pressTimer);
+            });
+
+            // Hide the edit button when the mouse leaves the message box while pressed down
+            message.addEventListener("mouseleave", () => {
+                clearTimeout(pressTimer);
+                message.querySelector(".edit-btn").classList.add("dnone");
+            });
+        });
+
+        // Hide the edit button when clicking anywhere on the page
+        // document.addEventListener("click", () => {
+        //     document.querySelectorAll(".edit-btn").forEach(editBtn => {
+        //         editBtn.classList.add("dnone");
+        //     });
+        // });
+    });
+
+
+
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const day = date.getDate();
+        const month = date.getMonth() + 1;
+        const year = date.getFullYear();
+        return `${day < 10 ? '0' + day : day}-${month < 10 ? '0' + month : month}-${year}`;
+    }
+
+    // Function to delete a message
+    function deleteMessage(id) {
+        let info_con_list = localStorage.getItem(info_con + "list");
+        if (info_con_list) {
+            let arr = JSON.parse(info_con_list);
+            // Filter out the message with the given ID
+            arr = arr.filter(item => item.Id !== id);
+            localStorage.setItem(info_con + "list", JSON.stringify(arr));
+            display(); // Update the message container
+        }
+    }
+
+    // Function to populate form fields with message data for editing
+    function editMessage(id) {
+        let info_con_list = localStorage.getItem(info_con + "list");
+        if (info_con_list) {
+            let arr = JSON.parse(info_con_list);
+            // Find the message with the given ID
+            const message = arr.find(item => item.Id === id);
+            if (message) {
+                // Populate form fields with message data
+                document.querySelector("input[name='type'][value='" + message.type + "']").checked = true;
+                document.getElementById("actype").value = message.actype;
+                document.getElementById("date").value = message.date;
+                document.getElementById("name").value = message.name;
+                document.getElementById("amount").value = message.amount;
+
+                // Change title of the popup to indicate editing
+                document.getElementById("popup-title").innerText = "Edit";
+
+                // Show the update button and hide the save button
+                document.getElementById("sdata").style.display = "none";
+                document.getElementById("supdate").style.display = "inline";
+
+                // Attach an event listener to the update button
+                document.getElementById("supdate").onclick = function () {
+                    updateMessage(id);
+                };
+
+                // Display the popup
+                document.querySelector(".popup").classList.remove("dnone");
+            }
+        }
+    }
+
+    // Function to update a message
+    function updateMessage(id) {
+        if (validateForm()) {
+            let type = document.querySelector("input[name='type']:checked").value;
+            let actype = document.getElementById("actype").value;
+            let date = document.getElementById("date").value;
+            let name = document.getElementById("name").value;
+            let amount = document.getElementById("amount").value;
+
+            let acc_name = localStorage.getItem("Acc_" + actype);
+            acc_name = JSON.parse(acc_name);
+            acc_name = acc_name.Name;
+
+            let data = {
+                type: type,
+                actype: actype,
+                date: date,
+                name: name,
+                amount: amount,
+                accountN: acc_name,
+                Id: id // Use the existing ID
+            }
+
+            let info_con_list = localStorage.getItem(info_con + "list");
+            let arr = [];
+            if (info_con_list) {
+                arr = JSON.parse(info_con_list);
+                // Find the index of the message with the given ID
+                const index = arr.findIndex(item => item.Id === id);
+                if (index !== -1) {
+                    // Update the message at the found index
+                    arr[index] = data;
+                    localStorage.setItem(info_con + "list", JSON.stringify(arr));
+                    display(); // Update the message container
+                    document.querySelector(".popup").classList.add("dnone");
+                    resetForm(); // Reset form fields
+                }
+            }
+        }
+    }
+
+    // Get account options from local storage
+    let accountOptions = [];
+    let Acc_count = localStorage.getItem("Acc_Count")
+    for (let index = 1; index <= Acc_count; index++) {
+        let gname = localStorage.getItem("Acc_" + index);
+        gname = JSON.parse(gname);
+        if (gname) {
+            let data = {
+                Name: gname["Name"],
+                Id: index
+            }
+            accountOptions.push(data);
+        }
+    }
+
+    // Populate the select element with account options
+    const actypeSelect = document.getElementById("actype");
+    accountOptions.forEach(option => {
+        // Check if an option with the same value already exists
+        const existingOption = actypeSelect.querySelector(`option[value="${option.Id}"]`);
+        if (!existingOption) {
+            // If no existing option found, create and append the new option
+            const optionElement = document.createElement("option");
+            optionElement.value = option.Id;
+            optionElement.textContent = option.Name;
+            actypeSelect.appendChild(optionElement);
+        }
+    });
+
+
+    let rdl = document.querySelectorAll(".rdl");
+    rdl.forEach(rdls => {
+        rdls.addEventListener("click", () => {
+            // Reset background color of all radio buttons
+            rdl.forEach(btn => {
+                btn.style.backgroundColor = "";
+            });
+
+            // Set background color of the clicked radio button
+            rdls.style.backgroundColor = "green";
+
+            // Get the value of the selected radio button
+            let value = rdls.getAttribute("value");
+            console.log(value); // Display the value in the console
+        });
+    });
+
+    function getTimeDateFromUniqueId(uniqueId) {
+        // Extract the timestamp part from the unique ID (assuming the timestamp is at the end after '_')
+        const timestampString = uniqueId.split('_').pop();
+
+        // Convert timestamp string to number
+        const timestamp = parseInt(timestampString);
+
+        // Create a Date object using the timestamp
+        const date = new Date(timestamp);
+
+        // Format the date and time
+        const formattedDate = date.toLocaleDateString(); // Format the date
+        const formattedTime = date.toLocaleTimeString(); // Format the time
+
+        // Return the formatted date and time
+        return {
+            date: formattedDate,
+            time: formattedTime
+        };
+    }
+
+
+    display(); // Call the display function to initially populate the message container
+</script>
+
+</html>

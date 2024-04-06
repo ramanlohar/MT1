@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Money Tracker App</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/popup.css">
+</head>
+
+<body>
+    <header>
+        <h1>&equiv;</h1>
+        <h1>Raman Lohar</h1>
+        <img src="" alt="">
+    </header>
+    <section>
+        <div class="in-exp">
+            <a href="income.html">
+                <div class="cl1">
+                    Income
+                </div>
+            </a>
+            <a href="Expend.html">
+                <div class="cl1">
+                    Expend
+
+                </div>
+            </a>
+        </div>
+        <div class="divide">
+            <i>
+                <hr>
+            </i><span>Contacts</span>
+            <i>
+                <hr>
+            </i>
+        </div>
+        <div class="conacts" id="conacts">
+        </div>
+    </section>
+
+    <div class="popup dnone">
+        <div class="popup-div">
+            <h2>Add New</h2>
+            <form class="form">
+                <input type="text" id="name" placeholder="Enter Name" required>
+                <input type="number" id="mobile" placeholder="Phone Number" required>
+                <div class="popup-btn-div">
+                    <button type="submit" id="scontact">Save</button>
+                    <button id="Cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <button class="f-btn">+</button>
+</body>
+<script src="js/utility.js"></script>
+<script>
+    let signstatus = lcg("signstatus");
+    if (signstatus != "true") {
+        redirect("html/signin.html");
+    }
+
+    document.querySelector(".f-btn").addEventListener("click", () => {
+        document.querySelector(".popup").classList.remove("dnone");
+    })
+
+    document.querySelector("#Cancel").addEventListener("click", () => {
+        document.querySelector(".popup").classList.add("dnone");
+    })
+
+    document.querySelector("#scontact").addEventListener("click", (e) => {
+        let name = document.querySelector("#name");
+        let mobile = document.querySelector("#mobile");
+
+        let Con_Count = localStorage.getItem("Con_Count");
+        if (!Con_Count) {
+            Con_Count = 1;
+            localStorage.setItem("Con_Count", Con_Count);
+        }
+        else {
+            Con_Count++;
+            localStorage.setItem("Con_Count", Con_Count);
+        }
+
+        if(name.value == ""){
+            name.style.backgroundColor = "red";
+        } else if (mobile.value == ""){
+            mobile.style.backgroundColor = "red";
+        }
+        else{
+            
+            let data = {
+                "Name": name.value,
+                "Mobile": mobile.value,
+                "Amount": 0
+            }
+            data = JSON.stringify(data);
+            localStorage.setItem("Con_" + Con_Count, data);
+            
+            document.querySelector(".popup").classList.add("dnone");
+            
+            let form = document.querySelector(".form")
+            form.reset();
+        }
+
+        setTimeout(() => {
+            mobile.style.backgroundColor = "";
+            name.style.backgroundColor = "";
+        }, 1000);
+
+        e.preventDefault();
+        display_con();
+    })
+
+    function display_con() {
+        let Con_Count = localStorage.getItem("Con_Count");
+
+        let conacts = document.getElementById("conacts");
+        conacts.innerHTML = ""
+        for (let index = 1; index <= Con_Count; index++) {
+
+
+            let gname = localStorage.getItem("Con_" + index);
+            gname = JSON.parse(gname);
+            if (gname) {
+                let cdiv = document.createElement("div");
+                cdiv.classList.add("cl");
+                cdiv.id = "Con_" + index;
+                cdiv.innerHTML = `
+                <input type="checkbox" class="none dnone" id="checkbox1">${gname["Name"]}
+                `;
+                conacts.appendChild(cdiv);
+            }
+        }
+        let cl = document.querySelectorAll(".cl");
+        cl.forEach(element => {
+            element.addEventListener("click", () => {
+                localStorage.setItem("info_con", element.id);
+                window.location.href = "html/infopage.html";
+            });
+        });
+    }
+
+    display_con();
+
+</script>
+<script src="js/allsum.js"></script>
+
+
+</html>
