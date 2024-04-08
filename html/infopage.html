@@ -377,6 +377,43 @@
         // });
     });
 
+    document.addEventListener("DOMContentLoaded", function () {
+    let allMessages = document.querySelectorAll(".message, .message2");
+    let pressTimer; // Variable to store the timer
+
+    allMessages.forEach(message => {
+        message.addEventListener("touchstart", (event) => {
+            // Prevent the default behavior of touch events to prevent scrolling
+            event.preventDefault();
+            // Start the timer when touch starts
+            pressTimer = setTimeout(() => {
+                // Display the edit button when the press duration exceeds 1 second
+                message.querySelector(".edit-btn").classList.remove("dnone");
+            }, 1000); // 1000 milliseconds = 1 second
+        });
+
+        message.addEventListener("touchend", () => {
+            // Clear the timer when touch ends
+            clearTimeout(pressTimer);
+        });
+
+        // Hide the edit button when the touch moves away from the message box while pressed down
+        message.addEventListener("touchmove", () => {
+            clearTimeout(pressTimer);
+            message.querySelector(".edit-btn").classList.add("dnone");
+        });
+    });
+
+    // Hide the edit button when tapping anywhere on the page
+    document.addEventListener("touchstart", (event) => {
+        // Prevent the default behavior of touch events to prevent unintended clicks
+        event.preventDefault();
+        allMessages.forEach(message => {
+            message.querySelector(".edit-btn").classList.add("dnone");
+        });
+    });
+});
+
 
 
 
