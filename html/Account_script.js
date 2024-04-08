@@ -1,4 +1,7 @@
+refreshw ();
 // Event listeners
+let refreshCount = 0;
+
 document
   .querySelector(".add-account-btn")
   .addEventListener("click", showAddAccountPopup);
@@ -48,7 +51,9 @@ function saveOrUpdateAccount() {
   hidePopup();
   document.querySelector(".form").reset();
   displayAccounts();
-  window.location.reload();
+
+setRefreshCount(2);
+  refreshw();
 }
 
 function highlightInvalidInput(...inputs) {
@@ -59,6 +64,7 @@ function highlightInvalidInput(...inputs) {
 }
 
 function displayAccounts() {
+  localStorage.setItem("Acc_Count",2);
   const Acc_Count = parseInt(localStorage.getItem("Acc_Count") || 0);
   const Accounts = document.getElementById("Accounts");
   Accounts.innerHTML = "";
@@ -115,35 +121,39 @@ function updateAccountAmounts() {
   const All_account_values = JSON.parse(
     localStorage.getItem("All_account_values") || "[]"
   );
+  console.log(All_account_values);
   All_account_values.forEach((element) => {
     const acc_id = element.Id;
-    let saved_acc_str = localStorage.getItem("Acc_" + acc_id);
-    let saved_acc;
-
+    const saved_acc_str = localStorage.getItem("Acc_" + acc_id);
     if (saved_acc_str !== null) {
+      let saved_acc;
       try {
         saved_acc = JSON.parse(saved_acc_str);
       } catch (error) {
         console.error("Error parsing JSON:", error);
         saved_acc = {};
       }
+      const updatedAmount = element.Amount + parseFloat(saved_acc.initial || 0);
+      const updatedData = {
+        Name: saved_acc.Name || element.Name,
+        Mobile: updatedAmount,
+        initial: saved_acc.initial || 0,
+      };
+      localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
     } else {
-      console.warn("No data found for Acc_" + acc_id);
-      // Create a new account with default values
-      saved_acc = { Name: element.Name || "Unknown", Mobile: 0, initial: 0 };
-    }
+      const updatedAmount = element.Amount;
+      const updatedData = {
+        Name: element.Name,
+        Mobile: updatedAmount,
+        initial:0,
+      };
+      localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
 
-    const updatedAmount = element.Amount + parseFloat(saved_acc.initial || 0);
-    const updatedData = {
-      Name: saved_acc.Name || element.Name,
-      Mobile: updatedAmount,
-      initial: saved_acc.initial || 0,
-    };
-    localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
+      // console.error("No data found for Acc_" + acc_id);
+    }
   });
   displayAccounts();
 }
-
 
 function getUniqueAccountIds() {
   const Con_Count = parseInt(localStorage.getItem("Con_Count") || 0);
@@ -205,6 +215,26 @@ function displayTotalAccountAmount() {
     console.log("Total amount of all accounts:", totalAmount);
     // Display the total amount in your HTML or wherever necessary
 }
+
+function refreshw (){
+  let refreshCount = getRefreshCount();
+  
+  if (refreshCount <= 2) {
+    refreshCount++;
+    setRefreshCount(refreshCount);
+    window.location.reload();
+  }
+}
+
+
+function setRefreshCount(count) {
+  localStorage.setItem("refreshCount", count);
+}
+
+function getRefreshCount() {
+  return parseInt(localStorage.getItem("refreshCount")) || 0;
+}
+
 
 updateAllAccountValues();
 displayAccounts();
