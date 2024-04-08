@@ -117,28 +117,33 @@ function updateAccountAmounts() {
   );
   All_account_values.forEach((element) => {
     const acc_id = element.Id;
-    const saved_acc_str = localStorage.getItem("Acc_" + acc_id);
+    let saved_acc_str = localStorage.getItem("Acc_" + acc_id);
+    let saved_acc;
+
     if (saved_acc_str !== null) {
-      let saved_acc;
       try {
         saved_acc = JSON.parse(saved_acc_str);
       } catch (error) {
         console.error("Error parsing JSON:", error);
         saved_acc = {};
       }
-      const updatedAmount = element.Amount + parseFloat(saved_acc.initial || 0);
-      const updatedData = {
-        Name: saved_acc.Name || element.Name,
-        Mobile: updatedAmount,
-        initial: saved_acc.initial || 0,
-      };
-      localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
     } else {
-      console.error("No data found for Acc_" + acc_id);
+      console.warn("No data found for Acc_" + acc_id);
+      // Create a new account with default values
+      saved_acc = { Name: element.Name || "Unknown", Mobile: 0, initial: 0 };
     }
+
+    const updatedAmount = element.Amount + parseFloat(saved_acc.initial || 0);
+    const updatedData = {
+      Name: saved_acc.Name || element.Name,
+      Mobile: updatedAmount,
+      initial: saved_acc.initial || 0,
+    };
+    localStorage.setItem("Acc_" + acc_id, JSON.stringify(updatedData));
   });
   displayAccounts();
 }
+
 
 function getUniqueAccountIds() {
   const Con_Count = parseInt(localStorage.getItem("Con_Count") || 0);
